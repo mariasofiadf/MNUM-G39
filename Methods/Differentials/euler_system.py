@@ -3,13 +3,16 @@ PRECISION = 0.0000001
 
 # VER AS VARIÁVEIS INDEPENDENTES E DEPENDENTES
 def euler_system(d_function1, d_function2, x0, y0, z0, xf, increment, verbose=False):
+    iterations = 0
     while abs(xf - x0) > PRECISION:
         temp_y = y0 + increment * d_function1(x0, y0, z0)
         z0 += increment * d_function2(x0, y0, z0)
         x0 += increment
         y0 = temp_y
+
+        iterations += 1
         if verbose:
-            print("x: {}, y: {}, z:{}".format(x0, y0, z0))
+            print("It: {}, x: {}, y: {}, z:{}".format(iterations, x0, y0, z0))
     return [y0, z0]
 
 

@@ -6,6 +6,7 @@ QC should be neat to 16 (2^4)
 
 
 def rk4(diff_function, x0, y0, xf, increment, verbose=False):
+    iterations = 0
     while abs(xf - x0) > PRECISION:
         delta_1 = increment * diff_function(x0, y0)
         delta_2 = increment * diff_function(x0 + increment/2, y0 + delta_1/2)
@@ -14,8 +15,9 @@ def rk4(diff_function, x0, y0, xf, increment, verbose=False):
 
         x0 += increment
         y0 += delta_1/6 + delta_2/3 + delta_3/3 + delta_4/6
+        iterations += 1
         if verbose:
-            print("x: {}, y: {}".format(x0, y0))
+            print("It: {}, x: {}, y: {}".format(iterations, x0, y0))
     return y0
 
 

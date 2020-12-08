@@ -3,13 +3,16 @@ PRECISION = 0.000001
 
 # VER AS VARIÁVEIS INDEPENDENTES E DEPENDENTES
 def rk2_system(d_function1, d_function2, x0, y0, z0, xf, increment, verbose=False):
+    iterations = 0
     while abs(xf - x0) > PRECISION:
         temp_x, temp_y, temp_z = x0, y0, z0
         x0 += increment
         y0 += increment * d_function1(temp_x + increment/2, temp_y+increment/2*d_function1(temp_x, temp_y, temp_z), temp_z+increment/2*d_function2(temp_x, temp_y, temp_z))
         z0 += increment * d_function2(temp_x + increment/2, temp_y+increment/2*d_function1(temp_x, temp_y, temp_z), temp_z+increment/2*d_function2(temp_x, temp_y, temp_z))
+
+        iterations += 1
         if verbose:
-            print("x: {}, y: {}, z:{}".format(x0, y0, z0))
+            print("It: {}, x: {}, y: {}, z:{}".format(iterations, x0, y0, z0))
     return [y0, z0]
 
 

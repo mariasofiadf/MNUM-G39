@@ -3,6 +3,7 @@ PRECISION = 0.000001
 
 # VER AS VARIÁVEIS INDEPENDENTES E DEPENDENTES
 def rk4_system(dfunction1, dfunction2, x0, y0, z0, xf, increment, verbose=False):
+    iterations = 0
     while abs(xf - x0) > PRECISION:
         delta_1_y = increment * dfunction1(x0, y0, z0)
         delta_1_z = increment * dfunction2(x0, y0, z0)
@@ -19,8 +20,10 @@ def rk4_system(dfunction1, dfunction2, x0, y0, z0, xf, increment, verbose=False)
         y0 += delta_1_y/6 + delta_2_y/3 + delta_3_y/3 + delta_4_y/6
         z0 += delta_1_z/6 + delta_2_z/3 + delta_3_z/3 + delta_4_z/6
         x0 += increment
+
+        iterations += 1
         if verbose:
-            print("x: {}, y: {}, z:{}".format(x0, y0, z0))
+            print("It: {}, x: {}, y: {}, z:{}".format(iterations, x0, y0, z0))
     return [y0, z0]
 
 

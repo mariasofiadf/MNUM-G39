@@ -6,14 +6,14 @@ QC should be neat to 2 (2^1)
 
 
 def euler(diff_function, x0, y0, xf, increment, verbose=False):
-    numberIterations = 0
+    iterations = 0
     while abs(xf - x0) > PRECISION:
         delta_y = diff_function(x0, y0)
         x0 += increment
         y0 += increment * delta_y
-        numberIterations += 1
+        iterations += 1
         if verbose:
-            print("It: {}, x: {}, y: {}".format(numberIterations, x0, y0))
+            print("It: {}, x: {}, y: {}".format(iterations, x0, y0))
     return y0
 
 
