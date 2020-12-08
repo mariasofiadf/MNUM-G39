@@ -18,6 +18,7 @@ Da autoria de:
 
 import matplotlib.pyplot as plt
 import math
+from Methods.RootFinding import bissection as bis
 
 #Ka = TEMOS DE CALCULAR COM A EQUAÇÃO DO PROF #(constante cinética de absorção) 
 Ket = 0.17325 #/h constante cinética de eliminação total
@@ -28,13 +29,18 @@ DosDia = 100 #mg Dose Diária
 
 def f(Ka):
     return Ka*math.exp(-Ka*tmax) - Ket*math.exp(-Ket*tmax)
+Ka1 = bis.bissection_abs_stop(0.10, 0.25, f)
+Ka2 = bis.bissection_abs_stop(0.25, 0.40, f)
+Ka = ( Ka1 + Ka2 )/2
+print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
 
-Ka = [x/100 for x in range(10,50)]
-fKa = [f(x) for x in Ka]
-plt.plot(Ka, fKa)
-plt.show()
-print("f(Ket): ", f(Ket))
-
+#CONFIRMAÇÃO GRÁFICA
+# =============================================================================
+# x = [x/100 for x in range(10,50)]
+# y = [f(x) for x in x]
+# plt.plot(x,y)
+# plt.show()
+# =============================================================================
 
 """
 #Dose administrada como função do tempo
@@ -49,8 +55,6 @@ Dy = [D(t) for t in Dt]
 plt.scatter(Dt,Dy) # ou usar plt.plot(Dt, Dy)
 plt.ylabel('Dose administrada em função do tempo')
 plt.show()
-
-
 
 #Modelo Monocompartimental
 def dCp(t, Cp):
