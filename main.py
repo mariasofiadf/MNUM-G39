@@ -18,7 +18,10 @@ Da autoria de:
 
 import matplotlib.pyplot as plt
 import math
-from Methods.RootFinding import bissection as bis
+from Methods.RootFinding import bissection as bissec
+from Methods.RootFinding import falsePosition as falsePos
+from Methods.RootFinding import newton
+from Methods.RootFinding import picardPeano as picPeano
 
 #Ka = TEMOS DE CALCULAR COM A EQUAÇÃO DO PROF #(constante cinética de absorção) 
 Ket = 0.17325 #/h constante cinética de eliminação total
@@ -29,10 +32,43 @@ DosDia = 100 #mg Dose Diária
 
 def f(Ka):
     return Ka*math.exp(-Ka*tmax) - Ket*math.exp(-Ket*tmax)
-Ka1 = bis.bissection_abs_stop(0.10, 0.25, f)
-Ka2 = bis.bissection_abs_stop(0.25, 0.40, f)
+
+def derf(Ka):
+    return Ket**2*tmax*math.exp(-Ket*tmax) - Ka**2*tmax*math.exp(-Ka*tmax)
+
+def g(Ka):
+    return (Ket*math.exp(-Ket*tmax))/(math.exp(-Ka*tmax))
+
+def derg(Ka):
+    return 0.346551001817167*math.exp(4*Ka)
+    
+print("Bissection")
+Ka1 = bissec.bissection_abs_stop(0.10, 0.25, f)
+Ka2 = bissec.bissection_abs_stop(0.25, 0.40, f)
 Ka = ( Ka1 + Ka2 )/2
 print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
+
+
+print("False Position")
+Ka1 = falsePos.false_position_abs_stop(0.10, 0.25, f)
+#Ka2 = falsePos.false_position_null_at_root(0.20, 0.60, f)
+Ka = ( Ka1 + Ka2 )/2
+print("Ka1: ", Ka1, "\nKa2: NOT WORKING", Ka2, "\nKa: ", Ka)
+
+print("Newton")
+#Ka1 = newton.newton_one_var(0.13, 20,f, derf)
+Ka2 = newton.newton_one_var(0.4, 30,f, derf)
+Ka = ( Ka1 + Ka2 )/2
+print("Ka1: NOT WORKING", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
+
+print("PicardPeano")
+Ka1 = picPeano.picard_peano(0.25, 20, f, derf)
+#Ka2 = picPeano.picard_peano(0.4, 30,f, derf)
+Ka = ( Ka1 + Ka2 )/2
+print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
+
+
+
 
 #CONFIRMAÇÃO GRÁFICA
 # =============================================================================
