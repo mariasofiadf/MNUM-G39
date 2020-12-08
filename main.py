@@ -17,7 +17,7 @@ Da autoria de:
 """
 
 import matplotlib.pyplot as plt
-import rk4
+import math
 
 #Ka = TEMOS DE CALCULAR COM A EQUAÇÃO DO PROF #(constante cinética de absorção) 
 Ket = 0.17325 #/h constante cinética de eliminação total
@@ -26,6 +26,17 @@ tmax = 4 #h
 DurTrat = 5 #dia
 DosDia = 100 #mg Dose Diária
 
+def f(Ka):
+    return Ka*math.exp(-Ka*tmax) - Ket*math.exp(-Ket*tmax)
+
+Ka = [x/100 for x in range(10,50)]
+fKa = [f(x) for x in Ka]
+plt.plot(Ka, fKa)
+plt.show()
+print("f(Ket): ", f(Ket))
+
+
+"""
 #Dose administrada como função do tempo
 def D(t):
     return 100 if (t % 24 == 0) else 0
@@ -39,16 +50,17 @@ plt.scatter(Dt,Dy) # ou usar plt.plot(Dt, Dy)
 plt.ylabel('Dose administrada em função do tempo')
 plt.show()
 
+
+
 #Modelo Monocompartimental
 def dCp(t, Cp):
     return (D(t)-Ke*Cp)/Vap
 
 #Modelo Bicompartimental
-
 def dMi(t, Mi):
     return D(t) - Ka*Mi
 
 
 def dMp(t, Mp):
     return Ka*Mi - Ke*Mp
-
+"""
