@@ -12,7 +12,7 @@ Ddia = (Dose diária)
 
 Da autoria de:
     Pedro Figueiredo up201904675
-    ---
+    Miguel Rodrigues up201906042
     ---
 """
 
@@ -32,43 +32,48 @@ DosDia = 100 #mg Dose Diária
 
 def f(Ka):
     return Ka*math.exp(-Ka*tmax) - Ket*math.exp(-Ket*tmax)
-
 def derf(Ka):
     return Ket**2*tmax*math.exp(-Ket*tmax) - Ka**2*tmax*math.exp(-Ka*tmax)
 
 def g(Ka):
     return (Ket*math.exp(-Ket*tmax))/(math.exp(-Ka*tmax))
-
 def derg(Ka):
     return 0.346551001817167*math.exp(4*Ka)
     
-print("Bissection")
+print("###### Bissection ######")
 Ka1 = bissec.bissection_abs_stop(0.10, 0.25, f)
 Ka2 = bissec.bissection_abs_stop(0.25, 0.40, f)
-Ka = ( Ka1 + Ka2 )/2
+Ka = (Ka1 + Ka2)/2
 print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
 
 
-print("False Position")
+print("###### False Position ######")
 Ka1 = falsePos.false_position_abs_stop(0.10, 0.25, f)
 #Ka2 = falsePos.false_position_null_at_root(0.20, 0.60, f)
 Ka = ( Ka1 + Ka2 )/2
 print("Ka1: ", Ka1, "\nKa2: NOT WORKING", Ka2, "\nKa: ", Ka)
 
-print("Newton")
+print("###### Newton ######")
 #Ka1 = newton.newton_one_var(0.13, 20,f, derf)
 Ka2 = newton.newton_one_var(0.4, 30,f, derf)
 Ka = ( Ka1 + Ka2 )/2
 print("Ka1: NOT WORKING", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
 
-print("PicardPeano")
-Ka1 = picPeano.picard_peano(0.25, 20, f, derf)
+print("###### PicardPeano ######")
+#Ka1 = picPeano.picard_peano(0.25, 20, f, derf)
 #Ka2 = picPeano.picard_peano(0.4, 30,f, derf)
-Ka = ( Ka1 + Ka2 )/2
+#Ka = ( Ka1 + Ka2 )/2
 print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
 
 
+def D(t):
+    return (-t % (24*60))*(100/(24*60))
 
+x = [x for x in range(0, 24*60*5)]
+y = [D(x) for x in x]
+
+plt.plot(x, y)
+plt.show()
 
 #CONFIRMAÇÃO GRÁFICA
 # =============================================================================
@@ -78,29 +83,29 @@ print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
 # plt.show()
 # =============================================================================
 
-"""
-#Dose administrada como função do tempo
-def D(t):
-    return 100 if (t % 24 == 0) else 0
+from Methods.Differentials import *
 
-#t está em horas e t está em [0, 24*5] (pois o tratamento dura 5 dias)
-Dt = [t for t in range(0,24*5)]
-#D(t) está em mg
-Dy = [D(t) for t in Dt]
-#Display gráfico da função
-plt.scatter(Dt,Dy) # ou usar plt.plot(Dt, Dy)
-plt.ylabel('Dose administrada em função do tempo')
-plt.show()
-
-#Modelo Monocompartimental
+# Modelo Monocompartimental
 def dCp(t, Cp):
-    return (D(t)-Ke*Cp)/Vap
+    return (D(t)-Ket*Cp)/Vap
 
-#Modelo Bicompartimental
-def dMi(t, Mi):
-    return D(t) - Ka*Mi
+# Modelo Bicompartimental
+def dMi(t, Mi, Mp):
+    return D(t) - (Ka/60)*Mi
+def dMp(t, Mi, Mp):
+    return (Ka/60)*Mi - (Ket/60)*Mp
 
+# print("###### EULER ######")
+# euler_system(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1, True)
+# print(euler_qc(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
+# print(euler_system_error(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
 
-def dMp(t, Mp):
-    return Ka*Mi - Ke*Mp
-"""
+print("###### RK2 ######")
+rk2_system(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1, True)
+print(rk2_qc(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
+print(rk2_system_error(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
+
+# print("###### RK4 ######")
+# rk4_system(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1, True)
+# print(rk4_qc(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
+# print(rk4_system_error(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
