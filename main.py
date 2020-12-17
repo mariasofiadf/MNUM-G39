@@ -7,7 +7,7 @@ Ka = (constante cinética de absorção)
 Ket  = (constante cinética de eliminação total)
 Vap = (Volume aparente de plasma)
 tmax = (instante onde ocorre concentração plasmática máxima)
-DurTrat = (Dureção padrão do tratamento)
+DurTrat = (Duração padrão do tratamento)
 Ddia = (Dose diária)
 
 Da autoria de:
@@ -18,94 +18,234 @@ Da autoria de:
 
 import matplotlib.pyplot as plt
 import math
-from Methods.RootFinding import bissection as bissec
-from Methods.RootFinding import falsePosition as falsePos
-from Methods.RootFinding import newton
-from Methods.RootFinding import picardPeano as picPeano
 
-#Ka = TEMOS DE CALCULAR COM A EQUAÇÃO DO PROF #(constante cinética de absorção) 
-Ket = 0.17325 #/h constante cinética de eliminação total
-Vap = 3150 # em ml Volume aparente de plasma
-tmax = 4 #h
-DurTrat = 5 #dia
-DosDia = 100 #mg Dose Diária
+# Ka = TEMOS DE CALCULAR COM A EQUAÇÃO DO PROF  #(constante cinética de absorção)
+
+Ket_hr = 0.17325  # constante cinética de eliminação total por hora
+Ket_min = Ket_hr / 60  # constante cinética de eliminação total por minuto
+
+Vap = 3150  # Volume aparente de plasma em ml
+
+tmax_hr = 4  # tempo máximo em horas
+tmax_min = tmax_hr * 60  # tempo máximo em minutos
+
+DurTrat = 5  # Duração do Tratamento em dias
+DosDia = 100  # Dose diária do fármaco em mg
+
 
 def f(Ka):
-    return Ka*math.exp(-Ka*tmax) - Ket*math.exp(-Ket*tmax)
-def derf(Ka):
-    return Ket**2*tmax*math.exp(-Ket*tmax) - Ka**2*tmax*math.exp(-Ka*tmax)
-
-def g(Ka):
-    return (Ket*math.exp(-Ket*tmax))/(math.exp(-Ka*tmax))
-def derg(Ka):
-    return 0.346551001817167*math.exp(4*Ka)
-    
-print("###### Bissection ######")
-Ka1 = bissec.bissection_abs_stop(0.10, 0.25, f)
-Ka2 = bissec.bissection_abs_stop(0.25, 0.40, f)
-Ka = (Ka1 + Ka2)/2
-print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
+    return Ka * math.exp(-Ka * tmax_min) - Ket_min * math.exp(-Ket_min * tmax_min)
 
 
-print("###### False Position ######")
-Ka1 = falsePos.false_position_abs_stop(0.10, 0.25, f)
-#Ka2 = falsePos.false_position_null_at_root(0.20, 0.60, f)
-Ka = ( Ka1 + Ka2 )/2
-print("Ka1: ", Ka1, "\nKa2: NOT WORKING", Ka2, "\nKa: ", Ka)
-
-print("###### Newton ######")
-#Ka1 = newton.newton_one_var(0.13, 20,f, derf)
-Ka2 = newton.newton_one_var(0.4, 30,f, derf)
-Ka = ( Ka1 + Ka2 )/2
-print("Ka1: NOT WORKING", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
-
-print("###### PicardPeano ######")
-#Ka1 = picPeano.picard_peano(0.25, 20, f, derf)
-#Ka2 = picPeano.picard_peano(0.4, 30,f, derf)
-#Ka = ( Ka1 + Ka2 )/2
-print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka)
+# Derivada Calculada no Maxima
+def diff_f(Ka):
+	return math.exp(-10.395 * Ka) - 10.395 * Ka * math.exp(-10.395 * Ka)
 
 
-def D(t):
-    return (-t % (24*60))*(100/(24*60))
+# Funções para o método iterativo de Picard Peano
+def g1(Ka):
+	return Ket_min * math.exp(-Ket_min * tmax_min) / math.exp(-Ka * tmax_min)
+def g2(Ka):
+	return -(math.log((Ket_min * math.exp(-Ket_min * tmax_min)) / Ka) / tmax_min)
 
-x = [x for x in range(0, 24*60*5)]
-y = [D(x) for x in x]
 
-plt.plot(x, y)
+# Derivadas Calculadas no Maxima
+def g1_diff(Ka):
+	return Ket_min * tmax_min * math.exp(Ka * tmax_min - Ket_min * tmax_min)
+def g2_diff(Ka):
+	return 1 / (Ka * tmax_min)
+
+
+# Plot da equação do Ka
+ka_axis = [x / (100 * 60) for x in range(0, 50)]
+ke_axis = [f(x) for x in ka_axis]
+
+plt.xlabel("$K_a$")
+plt.title("$K_a e^{-K_a t_{max} }-K_e e^{-K_e t_{max} }$")
+plt.grid()
+
+plt.plot(ka_axis, ke_axis)
 plt.show()
 
-#CONFIRMAÇÃO GRÁFICA
-# =============================================================================
-# x = [x/100 for x in range(10,50)]
-# y = [f(x) for x in x]
-# plt.plot(x,y)
-# plt.show()
-# =============================================================================
+from Methods.RootFinding import *
+
+print("###### Bissection ######")
+Ka1 = bissection_abs_stop(0.002, 0.003, f)
+Ka2 = bissection_abs_stop(0.005, 0.006, f)
+Ka_avg = ((Ka1 + Ka2) / 2) * 60
+print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka_avg)
+
+
+# Não Conseguimos Calcular os Zeros
+# print("###### False Position ######")
+# Ka1 = false_position_abs_stop(0.002, 0.003, f)
+# Ka2 = false_position_abs_stop(0.005, 0.006, f)
+# Ka_avg = ((Ka1 + Ka2) / 2) * 60
+# print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka_avg)
+
+# Não conseguimos calcular Zeros visto que a derivada troca de sinal entre os zeros
+# print("###### Newton ######")
+# Ka1 = newton_one_var(0.002, 18, f, diff_f)
+# Ka2 = newton_one_var(0.008, 18, f, diff_f)
+# Ka_avg = ((Ka1 + Ka2) / 2) * 60
+# print("Ka1:", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka_avg)
+
+
+# print("###### PicardPeano ######")
+# Ka1 = picard_peano(0.002, 25, g1, g1_diff)
+# Ka2 = picard_peano(0.005, 25, g2, g2_diff)
+# Ka_avg = ((Ka1 + Ka2) / 2) * 60
+# print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka_avg)
+
+
+# Função Administração
+def D(tempo):
+	return 100 if not tempo % 24 else 0
+
+
+t = [x for x in range(0, 24 * DurTrat)]
+y = [D(tempo) for tempo in t]
+
+plt.xlabel("t")
+plt.ylabel("D(t)")
+plt.title("Função Administração $D(t)$")
+plt.grid()
+
+plt.plot(t, y)
+plt.show()
 
 from Methods.Differentials import *
 
+
 # Modelo Monocompartimental
-def dCp(t, Cp):
-    return (D(t)-Ket*Cp)/Vap
 
-# Modelo Bicompartimental
-def dMi(t, Mi, Mp):
-    return D(t) - (Ka/60)*Mi
-def dMp(t, Mi, Mp):
-    return (Ka/60)*Mi - (Ket/60)*Mp
 
-# print("###### EULER ######")
-# euler_system(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1, True)
-# print(euler_qc(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
-# print(euler_system_error(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
+def dCp(tempo, Cp):
+	return (D(tempo) - Ket_hr * Cp) / Vap
+
+
+print("###### EULER ######")
+step_euler = 0.125
+res_euler_mono = euler(dCp, 0, 0, 24 * DurTrat, step_euler)
+print("QC Euler: ", euler_quotient(dCp, 0, 0, 24 * DurTrat, step_euler))
+print("Erro Euler: ", euler_error(dCp, 0, 0, 24 * DurTrat, step_euler))
+
+t = [elem[0] for elem in res_euler_mono]
+cp = [elem[1] / step_euler for elem in res_euler_mono]
+
+plt.xlabel("t")
+plt.suptitle("Balanço Mássico")
+plt.title("Modelo Monocompartimental - Euler")
+plt.grid()
+
+plt.plot(t, cp, label=r"$y = cp(t)$")
+plt.legend(loc=1)
+plt.show()
 
 print("###### RK2 ######")
-rk2_system(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1, True)
-print(rk2_qc(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
-print(rk2_system_error(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
+step_rk2 = 0.5
+res_rk2_mono = rk2(dCp, 0, 0, 24 * DurTrat, step_rk2)
+print("QC RK2: ", rk2_quotient(dCp, 0, 0, 24 * DurTrat, step_rk2))
+print("Erro RK2: ", rk2_error(dCp, 0, 0, 24 * DurTrat, step_rk2))
 
-# print("###### RK4 ######")
-# rk4_system(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1, True)
-# print(rk4_qc(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
-# print(rk4_system_error(dMi, dMp, 0, 100, 0, 24 * 60 * DurTrat, 1))
+t = [elem[0] for elem in res_rk2_mono]
+cp = [elem[1] / step_rk2 for elem in res_rk2_mono]
+
+plt.xlabel("t")
+plt.suptitle("Balanço Mássico")
+plt.title("Modelo Monocompartimental - RK2")
+plt.grid()
+
+plt.plot(t, cp, label=r"$y = cp(t)$")
+plt.legend(loc=1)
+plt.show()
+
+print("###### RK4 ######")
+step_rk4 = 0.125
+res_rk4_mono = rk4(dCp, 0, 0, 24 * DurTrat, step_rk4)
+print("QC RK4: ", rk4_quotient(dCp, 0, 0, 24 * DurTrat, step_rk4))
+print("Erro RK4: ", rk4_error(dCp, 0, 0, 24 * DurTrat, step_rk4))
+
+t = [elem[0] for elem in res_rk4_mono]
+cp = [elem[1] / step_rk4 for elem in res_rk4_mono]
+
+plt.xlabel("t")
+plt.suptitle("Balanço Mássico")
+plt.title("Modelo Monocompartimental - RK4")
+plt.grid()
+
+plt.plot(t, cp, label=r"$y = cp(t)$")
+plt.legend(loc=1)
+plt.show()
+
+
+# Modelo Bicompartimental
+
+
+def dMi(tempo, Mi, Mp):
+	return D(tempo) - Ka_avg * Mi
+
+
+def dMp(tempo, Mi, Mp):
+	return Ka_avg * Mi - Ket_hr * Mp
+
+
+print("###### EULER ######")
+step_euler = 0.125
+res_euler = euler_system(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_euler, False)
+print("QC Euler: ", euler_qc(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_euler))
+print("Erro Euler: ", euler_system_error(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_euler))
+
+t = [elem[0] for elem in res_euler]
+mi = [elem[1] / step_euler for elem in res_euler]
+mp = [elem[2] / step_euler for elem in res_euler]
+
+plt.xlabel("t")
+plt.suptitle("Balanço Mássico")
+plt.title("Modelo Bicompartimental - Euler")
+plt.grid()
+
+plt.plot(t, mi, label=r"$y = mi(t)$")
+plt.plot(t, mp, label=r"$y = mp(t)$")
+plt.legend(loc=1)
+plt.show()
+
+print("###### RK2 ######")
+step_rk2 = 0.1
+res_rk2 = rk4_system(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk2, False)
+print("QC RK2: ", rk4_qc(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk2))
+print("Erro RK2: ", rk4_system_error(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk2))
+
+t = [elem[0] for elem in res_euler]
+mi = [elem[1] / step_rk2 for elem in res_euler]
+mp = [elem[2] / step_rk2 for elem in res_euler]
+
+plt.xlabel("t")
+plt.suptitle("Balanço Mássico")
+plt.title("Modelo Bicompartimental - RK2")
+plt.grid()
+
+plt.plot(t, mi, label=r"$y = mi(t)$")
+plt.plot(t, mp, label=r"$y = mp(t)$")
+plt.legend(loc=1)
+plt.show()
+
+print("###### RK4 ######")
+step_rk4 = 0.1
+res_rk4 = rk4_system(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk4, False)
+print("QC RK4: ", rk4_qc(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk4))
+print("Erro RK4: ", rk4_system_error(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk4))
+
+t = [elem[0] for elem in res_euler]
+mi = [elem[1] / step_rk4 for elem in res_euler]
+mp = [elem[2] / step_rk4 for elem in res_euler]
+
+plt.xlabel("t")
+plt.suptitle("Balanço Mássico")
+plt.title("Modelo Bicompartimental - RK4")
+plt.grid()
+
+plt.plot(t, mi, label=r"$y = mi(t)$")
+plt.plot(t, mp, label=r"$y = mp(t)$")
+plt.legend(loc=1)
+plt.show()
