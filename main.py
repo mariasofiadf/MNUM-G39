@@ -29,7 +29,7 @@ Vap = 3150  # Volume aparente de plasma em ml
 tmax_hr = 4  # tempo máximo em horas
 tmax_min = tmax_hr * 60  # tempo máximo em minutos
 
-DurTrat = 5  # Duração do Tratamento em dias
+DurTrat = 6  # Duração do Tratamento em dias
 DosDia = 100  # Dose diária do fármaco em mg
 
 
@@ -102,6 +102,16 @@ print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka_avg)
 def D(tempo):
 	return 100 if not tempo % 24 else 0
 
+def D(tempo):
+    if((tempo > 120)):
+        return 0
+    if((tempo % 24 >= 0) and (tempo % 24 <= 4)):
+        return (tempo%24)*100/(12*4)
+    elif((tempo % 24 > 4)):
+        m = -10/24
+        b = 10
+        return (tempo%24)*(m)+b
+    return 0
 
 t = [x for x in range(0, 24 * DurTrat)]
 y = [D(tempo) for tempo in t]
@@ -121,7 +131,7 @@ from Methods.Differentials import *
 
 
 def dCp(tempo, Cp):
-	return (D(tempo) - Ket_hr * Cp) / Vap
+	return (D(tempo) - Ket_hr * Cp * Vap) / Vap
 
 
 print("###### EULER ######")
@@ -143,7 +153,7 @@ plt.legend(loc=1)
 plt.show()
 
 print("###### RK2 ######")
-step_rk2 = 0.5
+step_rk2 = 0.125
 res_rk2_mono = rk2(dCp, 0, 0, 24 * DurTrat, step_rk2)
 print("QC RK2: ", rk2_quotient(dCp, 0, 0, 24 * DurTrat, step_rk2))
 print("Erro RK2: ", rk2_error(dCp, 0, 0, 24 * DurTrat, step_rk2))

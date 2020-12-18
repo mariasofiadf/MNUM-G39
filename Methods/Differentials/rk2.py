@@ -11,7 +11,7 @@ def rk2(diff_function, x0, y0, xf, increment, verbose=False):
     while abs(xf - x0) > PRECISION:
         temp_x, temp_y = x0, y0
         x0 = temp_x + increment
-        y0 = temp_y+increment*diff_function(temp_x + increment/2, temp_y + increment/2 * diff_function(temp_x, temp_y))
+        y0 = temp_y + increment*diff_function(temp_x + increment/2, temp_y + increment/2 * diff_function(temp_x, temp_y))        
 
         result.append([x0, y0])
         iterations += 1
