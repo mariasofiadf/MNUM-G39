@@ -148,7 +148,7 @@ plt.suptitle("Balanço Mássico")
 plt.title("Modelo Monocompartimental - Euler")
 plt.grid()
 
-plt.plot(t, cp, label=r"$y = cp(t)$")
+plt.plot(t, cp, label=r"$cp(t)$")
 plt.legend(loc=1)
 plt.show()
 
@@ -166,7 +166,7 @@ plt.suptitle("Balanço Mássico")
 plt.title("Modelo Monocompartimental - RK2")
 plt.grid()
 
-plt.plot(t, cp, label=r"$y = cp(t)$")
+plt.plot(t, cp, label=r"$cp(t)$")
 plt.legend(loc=1)
 plt.show()
 
@@ -184,7 +184,7 @@ plt.suptitle("Balanço Mássico")
 plt.title("Modelo Monocompartimental - RK4")
 plt.grid()
 
-plt.plot(t, cp, label=r"$y = cp(t)$")
+plt.plot(t, cp, label=r"$cp(t)$")
 plt.legend(loc=1)
 plt.show()
 
@@ -215,16 +215,16 @@ plt.suptitle("Balanço Mássico")
 plt.title("Modelo Bicompartimental - Euler")
 plt.grid()
 
-plt.plot(t, mi, label=r"$y = mi(t)$")
-plt.plot(t, mp, label=r"$y = mp(t)$")
+plt.plot(t, mi, label=r"$mi(t)$")
+plt.plot(t, mp, label=r"$mp(t)$")
 plt.legend(loc=1)
 plt.show()
 
 print("###### RK2 ######")
-step_rk2 = 0.1
-res_rk2 = rk4_system(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk2, False)
-print("QC RK2: ", rk4_qc(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk2))
-print("Erro RK2: ", rk4_system_error(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk2))
+step_rk2 = 0.125
+res_rk2 = rk2_system(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk2, False)
+print("QC RK2: ", rk2_qc(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk2))
+print("Erro RK2: ", rk2_system_error(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk2))
 
 t = [elem[0] for elem in res_euler]
 mi = [elem[1] / step_rk2 for elem in res_euler]
@@ -235,13 +235,13 @@ plt.suptitle("Balanço Mássico")
 plt.title("Modelo Bicompartimental - RK2")
 plt.grid()
 
-plt.plot(t, mi, label=r"$y = mi(t)$")
-plt.plot(t, mp, label=r"$y = mp(t)$")
+plt.plot(t, mi, label=r"$mi(t)$")
+plt.plot(t, mp, label=r"$mp(t)$")
 plt.legend(loc=1)
 plt.show()
 
 print("###### RK4 ######")
-step_rk4 = 0.1
+step_rk4 = 0.125
 res_rk4 = rk4_system(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk4, False)
 print("QC RK4: ", rk4_qc(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk4))
 print("Erro RK4: ", rk4_system_error(dMi, dMp, 0, 0, 0, 24 * DurTrat, step_rk4))
@@ -255,7 +255,7 @@ plt.suptitle("Balanço Mássico")
 plt.title("Modelo Bicompartimental - RK4")
 plt.grid()
 
-plt.plot(t, mi, label=r"$y = mi(t)$")
-plt.plot(t, mp, label=r"$y = mp(t)$")
+plt.plot(t, mi, label=r"$mi(t)$")
+plt.plot(t, mp, label=r"$mp(t)$")
 plt.legend(loc=1)
 plt.show()
