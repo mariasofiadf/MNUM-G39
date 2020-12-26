@@ -99,8 +99,6 @@ print("Ka1: ", Ka1, "\nKa2: ", Ka2, "\nKa: ", Ka_avg)
 
 
 # Função Administração
-def D(tempo):
-	return 100 if not tempo % 24 else 0
 
 def D(tempo):
     if((tempo > 120)):
